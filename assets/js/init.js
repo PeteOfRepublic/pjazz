@@ -1,3 +1,3 @@
-document.body.onload = function(){
+window.onload = function(){
   console.log("ping");
 }
