@@ -1,0 +1,25 @@
+{
+  "name": "pjazz",
+  "authors": [
+    "Flowdeeps speedwolf@gmail.com"
+  ],
+  "description": "A lightweight PJAX library for simple SPA-like applications",
+  "main": "index.html",
+  "keywords": [
+    "SPA",
+    "PJAX"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "blankslate": "https://github.com/PeteOfRepublic/blankslate.git"
+  }
+}
