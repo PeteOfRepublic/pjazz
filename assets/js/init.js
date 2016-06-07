@@ -4,18 +4,20 @@ window.onload = function(){
       pjazz = linkList.getElementsByTagName( 'a' ),
       contentElem = document.getElementById( 'content' ),
       targetElem = "content",
-      xhr = new XMLHttpRequest();
+      xhr = new XMLHttpRequest(),
+      tmpNodes = document.implementation.createHTMLDocument();
 
   var doParse = function() {
     var elemText = xhr.response,
-    elemNodes = "";
-        tmpNodes = document.implementation.createHTMLDocument();
+        elemNodes = "";
+
     tmpNodes.body.innerHTML = elemText;
     elemNodes = tmpNodes.body.children;
     for ( var i = 0; i < elemNodes.length; i++ ) {
       var node = elemNodes[i];
       if ( node.id == targetElem ) {
         contentElem.innerHTML = node.innerHTML;
+        history.pushState( '', 'Title', tmpNodes.pjlink );
       }
     }
   }
@@ -69,6 +71,7 @@ window.onload = function(){
           console.log( "readystate = ", state, "server status = ", state );
         }
       }
+      tmpNodes.pjlink = pjlink; // let the pjlink out for other uses
     }
   }
 
