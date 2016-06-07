@@ -17,7 +17,13 @@ Watch this space…
 
 ### Thanks
 
-I spent an age trying to find a vanilla method for jQuery's native parseHTML() until I found the fantastic resource [YouMightNotNeedJquery](http://youmightnotneedjquery.com/) which suggested using a temporary html node in memory which could then be traversed like a traditional node tree.
+I spent an age trying to find a vanilla method for jQuery's native parseHTML() until I found the fantastic resource [YouMightNotNeedJquery](http://youmightnotneedjquery.com/) which suggested using a temporary html document in memory which could then be traversed like a traditional node tree.
+
+## TODO
+* Add push.history functionality
+* Get progress from the server on how long a file will take
+* Feed the progress to the momentum library
+* Add a way of excluding links from PJAZZ
 
 ## License
 MIT
