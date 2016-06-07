@@ -2,8 +2,23 @@ window.onload = function(){
 
   var linkList = document.getElementById( 'links' ),
       pjazz = linkList.getElementsByTagName( 'a' ),
+      contentElem = document.getElementById( 'content' ),
+      targetElem = "content",
       xhr = new XMLHttpRequest();
-      contentElem = document.getElementById( 'content' );
+
+  var doParse = function() {
+    var elemText = xhr.response,
+    elemNodes = "";
+        tmpNodes = document.implementation.createHTMLDocument();
+    tmpNodes.body.innerHTML = elemText;
+    elemNodes = tmpNodes.body.children;
+    for ( var i = 0; i < elemNodes.length; i++ ) {
+      var node = elemNodes[i];
+      if ( node.id == targetElem ) {
+        contentElem.innerHTML = node.innerHTML;
+      }
+    }
+  }
 
   for (var i = 0; i < pjazz.length; i++ ) {
     pjazz[i].onclick = function( event ) {
@@ -24,8 +39,8 @@ window.onload = function(){
         var state = xhr.readyState,
             status = xhr.status;
 
-        if ( state == 4 && status == 200 ){
-          // console.log( "success", xhr );
+        if ( state == 4 && status == 200 ){ // state loaded && server status 200 OK
+          doParse();
         } else if (
           state == 0 |
           state == 1 |
@@ -54,7 +69,6 @@ window.onload = function(){
           console.log( "readystate = ", state, "server status = ", state );
         }
       }
-
     }
   }
 
