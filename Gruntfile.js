@@ -47,7 +47,8 @@ module.exports = function ( grunt ) {
       },
       build: {
         files: {
-          'assets/js/init.min.js': [ 'assets/js/init.js' ]
+          'assets/js/pjazz.min.js': 'assets/js/pjazz.js',
+          'assets/js/init.min.js': 'assets/js/init.js'
         }
       }
     }
