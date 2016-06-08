@@ -16,7 +16,7 @@ Watch this space…
 
 ## It's Not Working For Me!
 
-Going by my own advice of "Solve your own problem first" I have ensured that this library works on my development machine. If you haven't got a recent browser or an up-to-date OS then I'm probably not going to fix it for you. That said if you are up-to-date with those things and it's still not working create a bug for me at http://github.com/Flowdeeps/PJazz#issues
+Going by my own advice of "Solve your own problem first" I have ensured that this library works on my development machine. If you haven't got a recent browser or an up-to-date OS then I'm probably not going to fix it for you. That said if you are up-to-date with those things and it's still not working create a bug for me at [the github page](http://github.com/Flowdeeps/PJazz/issues)
 
 ## TODO
 * Get progress from the server on how long a file will take
