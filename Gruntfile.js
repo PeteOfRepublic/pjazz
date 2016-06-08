@@ -25,7 +25,7 @@ module.exports = function ( grunt ) {
         files: {
           // compilation.css  :  source.less
           "assets/css/reset.css": "bower_components/blankslate/reset.less",
-          "assets/css/main.css": "assets/less/main.less"
+          "assets/css/pjazz.css": "assets/less/main.less"
         }
       },
     },
