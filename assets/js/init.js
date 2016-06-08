@@ -63,7 +63,6 @@ window.onload = function() {
 
       if ( targetElem == "body" ) {
         elemNodes = tmpNodes.body.innerHTML;
-        // console.log(contentElem[0].innerHTML);
         contentElem[ 0 ].innerHTML = elemNodes; // don't bother iterating through the nodes as we want everything
       } else {
         elemNodes = tmpNodes.body.children; // we have a target name so we have to iterate through it to find the content we want
@@ -76,7 +75,6 @@ window.onload = function() {
           // history.pushState( '', '', tmpNodes.pjlink );
         }
       }
-      doLinks;
     }
 
     var doLoad = function( ) {
