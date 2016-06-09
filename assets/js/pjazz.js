@@ -9,14 +9,16 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
     }
 
     // set the target element
-    function doLinkSource() {
-      if ( loadTo == "" || loadTo == null || loadTo == undefined ) {
-        loadTo = "body";
-        var contentElem = loadTo;
-        contentElem = document.getElementsByTagName ( contentElem );
-      } else {
-        var contentElem = loadTo;
-        contentElem = document.getElementById( contentElem );
+    function doLinkSource( contentElem ) {
+      if ( contentElem == "" || contentElem == null || contentElem == undefined ) {
+        if ( loadTo == "" || loadTo == null || loadTo == undefined ) {
+          loadTo = "body";
+          var contentElem = loadTo;
+          contentElem = document.getElementsByTagName ( contentElem );
+        } else {
+          var contentElem = loadTo;
+          contentElem = document.getElementById( contentElem );
+        }
       }
       doLinks( contentElem );
     }
@@ -153,11 +155,30 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
           }
         }
       }
-      history.pushState( '', newTitle, tmpNodes.pjlink ); // this pushes our link to the history
-      doLinkSource(); // once the content has been loaded into the body we need to collect the links again
-      console.log( "did the links" );
+      // history.pushState( '', newTitle, tmpNodes.pjlink ); // this pushes our link to the history
+      doLinkSource( contentElem ); // once the content has been loaded into the body we need to collect the links again
     }
 
-    // doLinkSource();
+    // call this once when the script runs to grab the external links
+    // if the content reloads an external link then it's catered for by the doLinks function above
+    // anything outside of the scope of the replaced content is covered by this function instead
+    function prepareOutboundLinks() {
+      var links = document.body.getElementsByTagName( 'a' ),
+          externalLinks = new Array();
+      for ( var i = 0; i < links.length; i++ ) {
+        var link = links[ i ];
+        if ( link.rel == "external" ) {
+          externalLinks.push( link );
+        }
+      }
+      for ( var j = 0; j < externalLinks.length; j++ ) {
+        externalLinks[ j ].onclick = function( event ) {
+          event.preventDefault();
+          var eLink = this;
+          window.open( eLink.href, eLink.innerHTML, '' );
+        }
+      }
+    }
+    prepareOutboundLinks();
 
 }
