@@ -1,71 +1,58 @@
 function pjazz( loadFrom, loadTo, linksFrom ) {
 
+    // start here
     // set the source element
-    if ( loadFrom == "" || loadFrom == null || loadFrom == undefined ) {
-      loadFrom = "body";
-      var targetElem = loadFrom;
-    } else {
-      var targetElem = loadFrom;
-    }
-
-    // set the target element
-    function doLinkSource( contentElem ) {
-      if ( contentElem == "" || contentElem == null || contentElem == undefined ) {
-        if ( loadTo == "" || loadTo == null || loadTo == undefined ) {
-          loadTo = "body";
-          var contentElem = loadTo;
-          contentElem = document.getElementsByTagName ( contentElem );
-        } else {
-          var contentElem = loadTo;
-          contentElem = document.getElementById( contentElem );
-        }
+    function doLinkSource( sourceElem, targetElem, linksFrom ) {
+      if ( loadFrom == "" || loadFrom == null || loadFrom == undefined ) {
+        loadFrom = "body";
+        var sourceElem = loadFrom;
+      } else {
+        var sourceElem = loadFrom;
       }
-      doLinks( contentElem );
+      doLinkTarget( sourceElem, targetElem, linksFrom ); // pass the source to the next function, the target
     }
     doLinkSource();
 
+    // set the target element
+    function doLinkTarget( sourceElem, targetElem, linksFrom, linkList ) {
+      if ( loadTo == "" || loadTo == null || loadTo == undefined ) {
+        loadTo = "body";
+        var targetElem = loadTo;
+        targetElem = document.getElementsByTagName ( targetElem );
+      } else {
+        var targetElem = loadTo;
+        targetElem = document.getElementById( targetElem );
+      }
+      doLinks( sourceElem, targetElem, linksFrom, linkList );
+    }
+
     // set the links - this is a function so we need to be able to call it again
-    function doLinks( contentElem ) {
+    function doLinks( sourceElem, targetElem, linksFrom, linkList ) {
       if ( linksFrom == "" || linksFrom == null || linksFrom == undefined ) {
         linksFrom = "body";
         var linkList = document.getElementsByTagName( linksFrom )[0];
       } else {
         var linkList = document.getElementById( linksFrom );
       }
-      // console.log( linksFrom );
-      // console.log( linkList.getElementsByTagName( 'a' ) );
       var pjazzLinks = new Array(),
           externalLinks = new Array(),
           tmpLinks = linkList.getElementsByTagName( 'a' );
       for ( var i = 0; i < tmpLinks.length; i++ ) {
         link = tmpLinks[ i ];
-        if ( link.rel != "external" ) {
-          pjazzLinks.push( link );
-        } else if ( link.rel == "external" ) {
+        if ( link.rel == "external" ) {
           externalLinks.push( link );
+        } else {
+          pjazzLinks.push( link );
         }
       }
-      // so what happens to links that aren't external and aren't meant to be pjazz'd?
-      // @TODO: Check to see if the link's host matches window.host - I imagine that's a can of worms
       prepareOutboundLinks( externalLinks ); // send our newly created links to a function to open them in a new window
-      doLoad( pjazzLinks, contentElem );
-    }
-
-    function prepareOutboundLinks( externalLinks ) { // this is the end of a chain so no need to callback
-      for ( var i = 0; i < externalLinks.length; i++ ) {
-        externalLinks[ i ].onclick = function( event ) {
-          event.preventDefault();
-          var eLink = this;
-          window.open( eLink.href, eLink.innerHTML, '' );
-        }
-      }
+      doLoad( pjazzLinks, sourceElem, targetElem, linksFrom, linkList );
     }
 
     var xhr = new XMLHttpRequest(),
         tmpNodes = document.implementation.createHTMLDocument();
 
-
-    function doLoad( pjazzLinks, contentElem ) {
+    function doLoad( pjazzLinks, sourceElem, targetElem, linksFrom, linkList ) {
       for (var i = 0; i < pjazzLinks.length; i++ ) {
         pjazzLinks[ i ].onclick = function( event ) {
           event.preventDefault();
@@ -80,13 +67,12 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
 
           xhr.open( 'GET', pjlink, true );
           xhr.send( null );
-
-          xhr.onreadystatechange = function() {
+          xhr.onreadystatechange = function( targetElem ) {
             var state = xhr.readyState,
                 status = xhr.status;
 
             if ( state == 4 && status == 200 ){ // state loaded && server status 200 OK
-              doParse( contentElem );
+              doParse( targetElem );
             } else if (
               state == 0 |
               state == 1 |
@@ -120,7 +106,8 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
       }
     }
 
-    function doParse( contentElem ) {
+    function doParse( sourceElem, targetElem, linksFrom, linkList ) {
+      console.log( targetElem );
       var elemText = xhr.response,
           elemNodes = "";
 
@@ -142,21 +129,22 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
         }
       }
 
+      console.log( targetElem );
       if ( targetElem == "body" ) {
         elemNodes = tmpNodes.body.innerHTML;
-        contentElem[ 0 ].innerHTML = elemNodes; // don't bother iterating through the nodes as we want everything
+        targetElem[ 0 ].innerHTML = elemNodes; // don't bother iterating through the nodes as we want everything
       } else {
         elemNodes = tmpNodes.body.children; // we have a target name so we have to iterate through it to find the content we want
         for ( var i = 0; i < elemNodes.length; i++ ) {
           var node = elemNodes[ i ],
           newTitle = "";
           if ( node.id == targetElem ) {
-            contentElem.innerHTML = node.innerHTML;
+            targetElem.innerHTML = node.innerHTML;
           }
         }
       }
       // history.pushState( '', newTitle, tmpNodes.pjlink ); // this pushes our link to the history
-      doLinkSource( contentElem ); // once the content has been loaded into the body we need to collect the links again
+      doLinkSource( sourceElem, targetElem, linksFrom, linkList ); // once the content has been loaded into the body we need to collect the links again
     }
 
     // call this once when the script runs to grab the external links

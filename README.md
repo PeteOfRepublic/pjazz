@@ -19,9 +19,9 @@ Watch this space…
 Going by my own advice of "Solve your own problem first" I have ensured that this library works on my development machine. If you haven't got a recent browser or an up-to-date OS then I'm probably not going to fix it for you. That said if you are up-to-date with those things and it's still not working create a bug for me at [the github page](http://github.com/Flowdeeps/PJazz/issues)
 
 ## TODO
-* Get progress from the server on how long a file will take
+* Get progress from the server on how long a file will take and then
 * Feed the progress to the momentum library
-* Add a way of excluding links from PJAZZ
+* Check to see if the link's host matches window.host - I imagine that's a can of worms
 
 ### Thanks
 
