@@ -9,34 +9,63 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
     }
 
     // set the target element
-    if ( loadTo == "" || loadTo == null || loadTo == undefined ) {
-      loadTo = "body";
-      var contentElem = loadTo;
-      contentElem = document.getElementsByTagName ( contentElem );
-    } else {
-      var contentElem = loadTo;
-      contentElem = document.getElementById( contentElem );
+    function doLinkSource() {
+      if ( loadTo == "" || loadTo == null || loadTo == undefined ) {
+        loadTo = "body";
+        var contentElem = loadTo;
+        contentElem = document.getElementsByTagName ( contentElem );
+      } else {
+        var contentElem = loadTo;
+        contentElem = document.getElementById( contentElem );
+      }
+      doLinks( contentElem );
     }
+    doLinkSource();
 
     // set the links - this is a function so we need to be able to call it again
-    doLinks = function() {
+    function doLinks( contentElem ) {
       if ( linksFrom == "" || linksFrom == null || linksFrom == undefined ) {
         linksFrom = "body";
         var linkList = document.getElementsByTagName( linksFrom )[0];
       } else {
         var linkList = document.getElementById( linksFrom );
       }
-      var pjazz = linkList.getElementsByTagName( 'a' );
-      doLoad( pjazz );
+      // console.log( linksFrom );
+      // console.log( linkList.getElementsByTagName( 'a' ) );
+      var pjazzLinks = new Array(),
+          externalLinks = new Array(),
+          tmpLinks = linkList.getElementsByTagName( 'a' );
+      for ( var i = 0; i < tmpLinks.length; i++ ) {
+        link = tmpLinks[ i ];
+        if ( link.rel != "external" ) {
+          pjazzLinks.push( link );
+        } else if ( link.rel == "external" ) {
+          externalLinks.push( link );
+        }
+      }
+      // so what happens to links that aren't external and aren't meant to be pjazz'd?
+      // @TODO: Check to see if the link's host matches window.host - I imagine that's a can of worms
+      prepareOutboundLinks( externalLinks ); // send our newly created links to a function to open them in a new window
+      doLoad( pjazzLinks, contentElem );
     }
-    doLinks();
+
+    function prepareOutboundLinks( externalLinks ) { // this is the end of a chain so no need to callback
+      for ( var i = 0; i < externalLinks.length; i++ ) {
+        externalLinks[ i ].onclick = function( event ) {
+          event.preventDefault();
+          var eLink = this;
+          window.open( eLink.href, eLink.innerHTML, '' );
+        }
+      }
+    }
 
     var xhr = new XMLHttpRequest(),
         tmpNodes = document.implementation.createHTMLDocument();
 
-    function doLoad( pjazz ) {
-      for (var i = 0; i < pjazz.length; i++ ) {
-        pjazz[ i ].onclick = function( event ) {
+
+    function doLoad( pjazzLinks, contentElem ) {
+      for (var i = 0; i < pjazzLinks.length; i++ ) {
+        pjazzLinks[ i ].onclick = function( event ) {
           event.preventDefault();
           var pjlink = this.href,
               getProt = window.location.protocol,
@@ -55,7 +84,7 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
                 status = xhr.status;
 
             if ( state == 4 && status == 200 ){ // state loaded && server status 200 OK
-              doParse();
+              doParse( contentElem );
             } else if (
               state == 0 |
               state == 1 |
@@ -89,7 +118,7 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
       }
     }
 
-    var doParse = function( callback ) {
+    function doParse( contentElem ) {
       var elemText = xhr.response,
           elemNodes = "";
 
@@ -125,7 +154,10 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
         }
       }
       history.pushState( '', newTitle, tmpNodes.pjlink ); // this pushes our link to the history
-      doLinks(); // once the content has been loaded into the body we need to collect the links again
+      doLinkSource(); // once the content has been loaded into the body we need to collect the links again
+      console.log( "did the links" );
     }
+
+    // doLinkSource();
 
 }
