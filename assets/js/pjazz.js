@@ -7,10 +7,9 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
       linksFrom = linksFrom,
       pjlink = "";
 
-      // console.log( loadFrom, loadTo, linksFrom);
-
   var xhr = new XMLHttpRequest(),
-      tmpNodes = document.implementation.createHTMLDocument();
+
+    tmpNodes = document.implementation.createHTMLDocument( "tmp" );
 
     // set the source element
     function doLinkSource( sourceElem, linksFrom ) {
