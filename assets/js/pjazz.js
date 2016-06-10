@@ -1,42 +1,53 @@
 function pjazz( loadFrom, loadTo, linksFrom ) {
 
-    // start here
+  // start here
+  // declare the global variables
+  var loadFrom = loadFrom,
+      loadTo = loadTo,
+      linksFrom = linksFrom,
+      pjlink = "";
+
+      // console.log( loadFrom, loadTo, linksFrom);
+
+  var xhr = new XMLHttpRequest(),
+      tmpNodes = document.implementation.createHTMLDocument();
+
     // set the source element
-    function doLinkSource( sourceElem, targetElem, linksFrom ) {
+    function doLinkSource( sourceElem, linksFrom ) {
       if ( loadFrom == "" || loadFrom == null || loadFrom == undefined ) {
         loadFrom = "body";
         var sourceElem = loadFrom;
       } else {
         var sourceElem = loadFrom;
       }
-      doLinkTarget( sourceElem, targetElem, linksFrom ); // pass the source to the next function, the target
+      doLinkTarget(); // pass the source to the next function, the target
     }
-    doLinkSource();
+    doLinkSource(); // this triggers the first function automatically
+
+    // console.log( loadFrom, loadTo, linksFrom);
 
     // set the target element
-    function doLinkTarget( sourceElem, targetElem, linksFrom, linkList ) {
+    function doLinkTarget() {
       if ( loadTo == "" || loadTo == null || loadTo == undefined ) {
         loadTo = "body";
-        var targetElem = loadTo;
-        targetElem = document.getElementsByTagName ( targetElem );
-      } else {
-        var targetElem = loadTo;
-        targetElem = document.getElementById( targetElem );
       }
-      doLinks( sourceElem, targetElem, linksFrom, linkList );
+      doLinks();
     }
 
     // set the links - this is a function so we need to be able to call it again
-    function doLinks( sourceElem, targetElem, linksFrom, linkList ) {
-      if ( linksFrom == "" || linksFrom == null || linksFrom == undefined ) {
+    function doLinks() {
+      if ( linksFrom == "" || linksFrom == null || linksFrom == undefined || linksFrom == "body" ) {
         linksFrom = "body";
-        var linkList = document.getElementsByTagName( linksFrom )[0];
+        var linkList = document.getElementsByTagName( linksFrom )[ 0 ],
+            tmpLinks = linkList.getElementsByTagName( 'a' );
       } else {
-        var linkList = document.getElementById( linksFrom );
+        var linkList = document.getElementById( linksFrom ),
+            tmpLinks = linkList.getElementsByTagName( 'a' );
       }
-      var pjazzLinks = new Array(),
-          externalLinks = new Array(),
-          tmpLinks = linkList.getElementsByTagName( 'a' );
+
+          pjazzLinks = new Array();
+          externalLinks = new Array()
+
       for ( var i = 0; i < tmpLinks.length; i++ ) {
         link = tmpLinks[ i ];
         if ( link.rel == "external" ) {
@@ -45,34 +56,34 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
           pjazzLinks.push( link );
         }
       }
-      prepareOutboundLinks( externalLinks ); // send our newly created links to a function to open them in a new window
-      doLoad( pjazzLinks, sourceElem, targetElem, linksFrom, linkList );
+      prepareOutboundLinks(); // send our newly created links to a function to open them in a new window
+      doLoad();
     }
 
-    var xhr = new XMLHttpRequest(),
-        tmpNodes = document.implementation.createHTMLDocument();
-
-    function doLoad( pjazzLinks, sourceElem, targetElem, linksFrom, linkList ) {
+    function doLoad() {
       for (var i = 0; i < pjazzLinks.length; i++ ) {
         pjazzLinks[ i ].onclick = function( event ) {
           event.preventDefault();
-          var pjlink = this.href,
-              getProt = window.location.protocol,
+
+          pjlink = this.href;
+
+          var getProt = window.location.protocol,
               getHost = window.location.host,
               getPort = window.location.port;
 
-          pjlink = pjlink.replace( getProt + "/", "" )
+          pjlink = pjlink.replace( getProt + "//", "" )
                          .replace( getHost + "/", "" )
                          .replace( getPort, "" );
 
           xhr.open( 'GET', pjlink, true );
           xhr.send( null );
-          xhr.onreadystatechange = function( targetElem ) {
+
+          xhr.onreadystatechange = function() {
             var state = xhr.readyState,
                 status = xhr.status;
 
             if ( state == 4 && status == 200 ){ // state loaded && server status 200 OK
-              doParse( targetElem );
+              doParse();
             } else if (
               state == 0 |
               state == 1 |
@@ -101,13 +112,13 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
               console.log( "readystate = ", state, "server status = ", state );
             }
           }
-          tmpNodes.pjlink = pjlink; // let the pjlink out for other uses
         }
       }
     }
 
-    function doParse( sourceElem, targetElem, linksFrom, linkList ) {
-      console.log( targetElem );
+
+    function doParse() {
+      targetElem = loadTo;
       var elemText = xhr.response,
           elemNodes = "";
 
@@ -123,28 +134,27 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
       elemNodes = tmpNodes.head.children; // change the page title - outside of the loop as it will be done no matter what
       for ( var i = 0; i < elemNodes.length; i++ ) {
         var node = elemNodes[i];
-        if ( node.tagName == "TITLE" ) {
+        if ( node.tagName.toLowerCase() == "title" ) {
           newTitle = node.innerText;
           document.getElementsByTagName( 'title' )[ 0 ].innerText = newTitle;
         }
       }
 
-      console.log( targetElem );
       if ( targetElem == "body" ) {
         elemNodes = tmpNodes.body.innerHTML;
-        targetElem[ 0 ].innerHTML = elemNodes; // don't bother iterating through the nodes as we want everything
+        document.getElementsByTagName( targetElem )[ 0 ].innerHTML = elemNodes; // don't bother iterating through the nodes as we want everything
       } else {
         elemNodes = tmpNodes.body.children; // we have a target name so we have to iterate through it to find the content we want
         for ( var i = 0; i < elemNodes.length; i++ ) {
           var node = elemNodes[ i ],
           newTitle = "";
           if ( node.id == targetElem ) {
-            targetElem.innerHTML = node.innerHTML;
+            document.getElementById( targetElem ).innerHTML = node.innerHTML;
           }
         }
       }
-      // history.pushState( '', newTitle, tmpNodes.pjlink ); // this pushes our link to the history
-      doLinkSource( sourceElem, targetElem, linksFrom, linkList ); // once the content has been loaded into the body we need to collect the links again
+      history.pushState( '', newTitle, pjlink ); // this pushes our link to the history and honours the title variable even if the current stock of browser do not - overkill really as we're also specifying the title above
+      doLinkSource(); // once the content has been loaded into the body we need to collect the links again
     }
 
     // call this once when the script runs to grab the external links

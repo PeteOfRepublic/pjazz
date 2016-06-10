@@ -14,14 +14,15 @@ There are other libraries out there that do the same thing (PJAX) but I wanted s
 
 Watch this space…
 
-## It's Not Working For Me!
+## Bugs
 
-Going by my own advice of "Solve your own problem first" I have ensured that this library works on my development machine. If you haven't got a recent browser or an up-to-date OS then I'm probably not going to fix it for you. That said if you are up-to-date with those things and it's still not working create a bug for me at [the github page](http://github.com/Flowdeeps/PJazz/issues)
+Going by my own advice of "Solve your own problem first" I have ensured that this library works on my development machine. If you find a bug or just want to mention something that doesn't work for you give me a description of the issue, your OS and browser combo on [the github page](http://github.com/Flowdeeps/PJazz/issues)
 
 ## TODO
 * Get progress from the server on how long a file will take and then
 * Feed the progress to the momentum library
 * Check to see if the link's host matches window.host - I imagine that's a can of worms
+* Support folder hierarchies for the push history - I don't think that's too much work
 
 ### Thanks
 
