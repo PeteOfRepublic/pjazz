@@ -70,7 +70,7 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
               getHost = window.location.host,
               getPort = window.location.port;
 
-          pjlink = pjlink.replace( getProt + "//", "" )
+          pjlink = pjlink.replace( getProt + "/", "" )
                          .replace( getHost + "/", "" )
                          .replace( getPort, "" );
 
