@@ -23,6 +23,8 @@ Going by my own advice of "Solve your own problem first" I have ensured that thi
 * Feed the progress to the momentum library
 * Check to see if the link's host matches window.host - I imagine that's a can of worms
 * Support folder hierarchies for the push history - I don't think that's too much work
+* Support nested folders for content loading - currently doesn't work if content isn't at site root
+* Investigate possibility of loading content on individual link
 
 ### Thanks
 
