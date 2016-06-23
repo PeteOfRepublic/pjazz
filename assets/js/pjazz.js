@@ -81,7 +81,7 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
               getHost = winloc.host,
               getPort = winloc.port;
 
-          pjlink = pjlink.replace( getProt + "//", "" )
+          pjlink = pjlink.replace( getProt + "/", "" )
                          .replace( getHost + "/", "" )
                          .replace( getPort, "" );
 
