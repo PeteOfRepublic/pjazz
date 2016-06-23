@@ -2,14 +2,25 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
 
   // start here
   // declare the global variables
-  var loadFrom = loadFrom,
-      loadTo = loadTo,
-      linksFrom = linksFrom,
+  var doc = document,
+      winloc = window.location,
       pjlink = "";
 
-  var xhr = new XMLHttpRequest(),
+      loadFrom = loadFrom,
+      loadTo = loadTo,
+      linksFrom = linksFrom;
 
-    tmpNodes = document.implementation.createHTMLDocument( "tmp" );
+
+  // add off-the-shelf support for the momentum lib - https://github.com/PeteOfRepublic/momentum
+  var momentum = doc.getElementById( 'momentum' );
+
+  if ( momentum ) {
+    var style = document.createElement( 'style' );
+    doc.head.appendChild( style );
+  }
+
+  var xhr = new XMLHttpRequest(),
+      tmpNodes = doc.implementation.createHTMLDocument( "tmp" );
 
     // set the source element
     function doLinkSource( sourceElem, linksFrom ) {
@@ -37,10 +48,10 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
     function doLinks() {
       if ( linksFrom == "" || linksFrom == null || linksFrom == undefined || linksFrom == "body" ) {
         linksFrom = "body";
-        var linkList = document.getElementsByTagName( linksFrom )[ 0 ],
+        var linkList = doc.getElementsByTagName( linksFrom )[ 0 ],
             tmpLinks = linkList.getElementsByTagName( 'a' );
       } else {
-        var linkList = document.getElementById( linksFrom ),
+        var linkList = doc.getElementById( linksFrom ),
             tmpLinks = linkList.getElementsByTagName( 'a' );
       }
 
@@ -66,16 +77,37 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
 
           pjlink = this.href;
 
-          var getProt = window.location.protocol,
-              getHost = window.location.host,
-              getPort = window.location.port;
+          var getProt = winloc.protocol,
+              getHost = winloc.host,
+              getPort = winloc.port;
 
-          pjlink = pjlink.replace( getProt + "//", "" )
+          pjlink = pjlink.replace( getProt + "/", "" )
                          .replace( getHost + "/", "" )
                          .replace( getPort, "" );
 
           xhr.open( 'GET', pjlink, true );
           xhr.send( null );
+
+          xhr.addEventListener( 'progress', updateProgress );
+          xhr.addEventListener( 'load', complete );
+
+          function updateProgress( event ) {
+            if ( event.lengthComputable ) {
+              var percentComplete = Math.round( ( event.loaded / event.total ) * 100 );
+              if ( momentum ) {
+                momentum.classList.add( "active" );
+                style.sheet.addRule( "#momentum.active::after", "width: " + percentComplete + "vw" );
+              }
+            } else {
+              console.log( "can't compute length of object" );
+            }
+          }
+
+          function complete( event ) {
+            if ( momentum ) {
+              momentum.classList.remove( "active" );
+            }
+          }
 
           xhr.onreadystatechange = function() {
             var state = xhr.readyState,
@@ -135,20 +167,29 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
         var node = elemNodes[i];
         if ( node.tagName.toLowerCase() == "title" ) {
           newTitle = node.innerText;
-          document.getElementsByTagName( 'title' )[ 0 ].innerText = newTitle;
+          doc.getElementsByTagName( 'title' )[ 0 ].innerText = newTitle;
         }
       }
 
       if ( targetElem == "body" ) {
         elemNodes = tmpNodes.body.innerHTML;
-        document.getElementsByTagName( targetElem )[ 0 ].innerHTML = elemNodes; // don't bother iterating through the nodes as we want everything
+        if ( momentum ) {
+          var checkMomentumClass = setInterval( function(){
+            if ( !momentum.classList.contains( "active" ) ) {
+              clearInterval( checkMomentumClass );
+              doc.getElementsByTagName( targetElem )[ 0 ].innerHTML = elemNodes; // don't bother iterating through the nodes as we want everything
+            }
+          }, 50);
+        } else {
+          doc.getElementsByTagName( targetElem )[ 0 ].innerHTML = elemNodes; // don't bother iterating through the nodes as we want everything
+        }
       } else {
         elemNodes = tmpNodes.body.children; // we have a target name so we have to iterate through it to find the content we want
         for ( var i = 0; i < elemNodes.length; i++ ) {
           var node = elemNodes[ i ],
           newTitle = "";
           if ( node.id == targetElem ) {
-            document.getElementById( targetElem ).innerHTML = node.innerHTML;
+            doc.getElementById( targetElem ).innerHTML = node.innerHTML;
           }
         }
       }
@@ -160,7 +201,7 @@ function pjazz( loadFrom, loadTo, linksFrom ) {
     // if the content reloads an external link then it's catered for by the doLinks function above
     // anything outside of the scope of the replaced content is covered by this function instead
     function prepareOutboundLinks() {
-      var links = document.body.getElementsByTagName( 'a' ),
+      var links = doc.body.getElementsByTagName( 'a' ),
           externalLinks = new Array();
       for ( var i = 0; i < links.length; i++ ) {
         var link = links[ i ];
