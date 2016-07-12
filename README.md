@@ -4,7 +4,10 @@ Pronouned: [puh-jaz]
 
 ## What is it?
 
-A really simple lightweight SPA library for faking your way to greatness. No, really. It just grabs the pages at the other end of the link and replaces the target element ID or current body tag with the content or body from the target page. That's it.
+![PJAZZ](http://www.petehaughie.com/wp-content/uploads/2016/06/logo-1-300x291.jpg)
+
+A really simple lightweight SPA library for faking your way to greatness. No, really. It 
+just grabs the pages at the other end of the link and replaces the target element ID or current body tag with the content or body from the target page. That's it.
 
 ## Why?
 
