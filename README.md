@@ -4,7 +4,7 @@ Pronouned: [puh-jaz]
 
 ## What is it?
 
-!(PJAZZ)[http://www.petehaughie.com/wp-content/uploads/2016/06/logo-1-300x291.jpg] A really 
+![PJAZZ](http://www.petehaughie.com/wp-content/uploads/2016/06/logo-1-300x291.jpg) A really 
 simple lightweight SPA library for 
 faking your way to greatness. No, 
 really. It 
